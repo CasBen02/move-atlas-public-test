@@ -1,0 +1,93 @@
+{
+  "routes": [
+    {
+      "id": "route-a",
+      "notices": [
+        {
+          "code": "violatedVehicleRestriction",
+          "title": "Violated vehicle restriction.",
+          "severity": "critical",
+          "details": [
+            {
+              "type": "restriction",
+              "cause": "Route violates vehicle restriction",
+              "maxHeight": 420
+            }
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-a",
+          "type": "vehicle",
+          "departure": {
+            "time": "2026-08-01T13:00:00Z"
+          },
+          "arrival": {
+            "time": "2026-08-01T15:00:00Z"
+          },
+          "summary": {
+            "duration": 7200,
+            "baseDuration": 6900,
+            "typicalDuration": 7050,
+            "length": 160934
+          },
+          "polyline": "BFoz5xJ67i1B1B7PzIhaxL7Y",
+          "actions": [
+            {
+              "action": "depart",
+              "duration": 10,
+              "length": 20,
+              "instruction": "Head north",
+              "offset": 0
+            }
+          ],
+          "spans": [
+            {
+              "offset": 0,
+              "length": 160934,
+              "duration": 7200,
+              "truckAttributes": ["openForDelivery"],
+              "roadAttributes": ["controlledAccess"],
+              "notices": [0],
+              "incidents": [0]
+            }
+          ],
+          "notices": [
+            {
+              "code": "truckRestriction",
+              "title": "Truck restriction information",
+              "severity": "warning"
+            }
+          ],
+          "tolls": [
+            {
+              "countryCode": "USA",
+              "tollSystem": "example-system",
+              "paymentMethods": ["cash", "transponder"],
+              "fares": [
+                {
+                  "name": "Toll estimate",
+                  "price": {
+                    "currency": "USD",
+                    "value": 12.5
+                  }
+                }
+              ]
+            }
+          ],
+          "incidents": [
+            {
+              "id": "here:traffic:incident:example",
+              "type": "construction",
+              "criticality": "major",
+              "validFrom": "2026-08-01T12:00:00Z",
+              "validUntil": "2026-08-02T12:00:00Z",
+              "description": "Road construction"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
