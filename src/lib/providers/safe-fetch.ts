@@ -74,6 +74,28 @@ export async function safeFetchJson<T>(
       });
 
       if (!response.ok) {
+        const providerError = await response.clone().json().catch(() => null);
+const providerErrorRecord =
+  providerError && typeof providerError === "object"
+    ? (providerError as Record<string, unknown>)
+    : null;
+
+console.error("Provider request failed", {
+  provider: options.provider,
+  status: response.status,
+  code:
+    typeof providerErrorRecord?.code === "string"
+      ? providerErrorRecord.code
+      : null,
+  title:
+    typeof providerErrorRecord?.title === "string"
+      ? providerErrorRecord.title
+      : null,
+  cause:
+    typeof providerErrorRecord?.cause === "string"
+      ? providerErrorRecord.cause
+      : null,
+});
         const retryable = RETRYABLE_STATUS.has(response.status);
         if (retryable && attempt < attempts) {
           const requestedDelay = retryAfterMs(response);
