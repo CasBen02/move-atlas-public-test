@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm env:check && pnpm build",
+  "crons": [
+    {
+      "path": "/api/maintenance/cleanup",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}

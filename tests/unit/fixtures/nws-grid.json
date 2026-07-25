@@ -1,0 +1,50 @@
+{
+  "properties": {
+    "updateTime": "2026-08-01T10:00:00Z",
+    "windGust": {
+      "uom": "wmoUnit:km_h-1",
+      "values": [
+        {
+          "validTime": "2026-08-01T13:00:00Z/PT2H",
+          "value": 64.3738
+        }
+      ]
+    },
+    "visibility": {
+      "uom": "wmoUnit:m",
+      "values": [
+        {
+          "validTime": "2026-08-01T13:00:00Z/PT2H",
+          "value": 1609.344
+        }
+      ]
+    },
+    "snowfallAmount": {
+      "uom": "wmoUnit:mm",
+      "values": [
+        {
+          "validTime": "2026-08-01T13:00:00Z/PT2H",
+          "value": 25.4
+        }
+      ]
+    },
+    "iceAccumulation": {
+      "uom": "wmoUnit:mm",
+      "values": [
+        {
+          "validTime": "2026-08-01T13:00:00Z/PT2H",
+          "value": 2.54
+        }
+      ]
+    },
+    "probabilityOfPrecipitation": {
+      "uom": "wmoUnit:percent",
+      "values": [
+        {
+          "validTime": "2026-08-01T13:00:00Z/PT2H",
+          "value": 65
+        }
+      ]
+    }
+  }
+}

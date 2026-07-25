@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f5ef"/>
+  <circle cx="1050" cy="130" r="280" fill="none" stroke="#c8dd77" stroke-width="3" opacity=".5"/>
+  <circle cx="1050" cy="130" r="205" fill="none" stroke="#4f7a55" stroke-width="3" opacity=".35"/>
+  <circle cx="1050" cy="130" r="130" fill="none" stroke="#263b2b" stroke-width="3" opacity=".2"/>
+  <rect x="72" y="68" width="62" height="62" rx="31" fill="#263b2b"/>
+  <text x="103" y="110" text-anchor="middle" font-family="Georgia,serif" font-size="32" font-weight="700" fill="#c8dd77">M</text>
+  <text x="155" y="110" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="32" font-weight="700" fill="#20241e">Move Atlas</text>
+  <text x="72" y="252" font-family="Georgia,serif" font-size="72" font-weight="700" fill="#20241e">Every part of your move,</text>
+  <text x="72" y="335" font-family="Georgia,serif" font-size="72" font-style="italic" fill="#4f7a55">in one calm place.</text>
+  <text x="72" y="420" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="28" fill="#4d514a">Plan · compare · route · pack · budget · settle in</text>
+  <rect x="72" y="487" width="360" height="72" rx="36" fill="#263b2b"/>
+  <text x="252" y="533" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="24" font-weight="700" fill="#fbfbf7">Organized around real life</text>
+</svg>

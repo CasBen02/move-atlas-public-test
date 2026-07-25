@@ -1,0 +1,27 @@
+{
+  "features": [
+    {
+      "id": "https://api.weather.gov/alerts/urn:oid:example",
+      "properties": {
+        "id": "urn:oid:example",
+        "areaDesc": "Example County",
+        "sent": "2026-08-01T11:00:00Z",
+        "effective": "2026-08-01T11:00:00Z",
+        "onset": "2026-08-01T13:00:00Z",
+        "expires": "2026-08-01T18:00:00Z",
+        "ends": "2026-08-01T17:00:00Z",
+        "status": "Actual",
+        "messageType": "Alert",
+        "category": "Met",
+        "severity": "Severe",
+        "certainty": "Likely",
+        "urgency": "Immediate",
+        "event": "Severe Thunderstorm Warning",
+        "response": "Shelter",
+        "headline": "Severe Thunderstorm Warning issued for Example County",
+        "description": "Official example alert description.",
+        "instruction": "Follow instructions from local officials."
+      }
+    }
+  ]
+}

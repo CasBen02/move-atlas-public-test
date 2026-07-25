@@ -1,0 +1,50 @@
+{
+  "properties": {
+    "updated": "2026-08-01T10:00:00Z",
+    "generatedAt": "2026-08-01T10:01:00Z",
+    "periods": [
+      {
+        "number": 1,
+        "name": "1 PM",
+        "startTime": "2026-08-01T13:00:00Z",
+        "endTime": "2026-08-01T14:00:00Z",
+        "isDaytime": true,
+        "temperature": 82,
+        "temperatureUnit": "F",
+        "temperatureTrend": null,
+        "probabilityOfPrecipitation": {
+          "unitCode": "wmoUnit:percent",
+          "value": 35
+        },
+        "dewpoint": {
+          "unitCode": "wmoUnit:degC",
+          "value": 19
+        },
+        "relativeHumidity": {
+          "unitCode": "wmoUnit:percent",
+          "value": 61
+        },
+        "windSpeed": "12 to 18 mph",
+        "windDirection": "SW",
+        "shortForecast": "Chance Thunderstorms",
+        "detailedForecast": "A chance of thunderstorms."
+      },
+      {
+        "number": 2,
+        "name": "2 PM",
+        "startTime": "2026-08-01T14:00:00Z",
+        "endTime": "2026-08-01T15:00:00Z",
+        "isDaytime": true,
+        "temperature": 83,
+        "temperatureUnit": "F",
+        "probabilityOfPrecipitation": {
+          "unitCode": "wmoUnit:percent",
+          "value": 45
+        },
+        "windSpeed": "20 mph",
+        "windDirection": "W",
+        "shortForecast": "Thunderstorms"
+      }
+    ]
+  }
+}
