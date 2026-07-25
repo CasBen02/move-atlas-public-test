@@ -379,7 +379,7 @@ export function buildHereRoutingUrl(input: HereRouteRequest): URL {
   );
   url.searchParams.set(
     "spans",
-    "notices,incidents,truckAttributes,roadAttributes,length,duration",
+    "notices,incidents,truckAttributes,length,duration",
   );
   url.searchParams.set("units", "imperial");
   if (input.departureTime) {
