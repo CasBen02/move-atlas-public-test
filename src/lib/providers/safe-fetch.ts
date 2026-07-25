@@ -104,10 +104,20 @@ console.error("Provider request failed", {
         }
         return unavailable({
           reason: statusReason(response.status),
-          message:
-            response.status === 429
-              ? `${options.provider} is temporarily rate limiting requests.`
-              : `${options.provider} did not return the requested information.`,
+        message:
+  response.status === 429
+    ? `${options.provider} is temporarily rate limiting requests.`
+    : [
+        `${options.provider} error ${response.status}.`,
+        typeof providerErrorRecord?.code === "string"
+          ? `Code: ${providerErrorRecord.code}.`
+          : "",
+        typeof providerErrorRecord?.cause === "string"
+          ? providerErrorRecord.cause
+          : "",
+      ]
+        .filter(Boolean)
+        .join(" "),
           retryable,
           meta: {
             provider: options.provider,
