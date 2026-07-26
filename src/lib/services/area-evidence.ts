@@ -428,7 +428,7 @@ const crimeFit =
     "Vacancy rate is an ACS estimate and does not represent current listings, inventory, or future market conditions.",
 },
   ];
-  const metricRows = scored.map((item) => ({
+  const metricRows: Record<string, unknown>[] = scored.map((item) => ({
     user_id: input.userId,
     move_plan_id: input.movePlanId,
     area_id: input.areaId,
