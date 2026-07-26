@@ -29,7 +29,12 @@ function scoreAgainstCeiling(value: number, ceiling: number) {
   if (value <= ceiling) return 100;
   return Math.max(0, Math.round((100 - ((value - ceiling) / ceiling) * 100) * 10) / 10);
 }
+function scoreMarketVacancy(value: number) {
+  if (value >= 5 && value <= 10) return 100;
 
+  const distance = value < 5 ? 5 - value : value - 10;
+  return Math.max(0, Math.round((100 - distance * 12.5) * 10) / 10);
+}
 function display(value: number, unit: string) {
   if (unit === "dollars") {
     return new Intl.NumberFormat("en-US", {
@@ -274,6 +279,7 @@ export async function loadOfficialAreaEvidence(input: {
       ? byId.get("median_home_value")
       : byId.get("median_gross_rent");
   const commuteMeasure = byId.get("mean_commute_minutes");
+  const marketMeasure = byId.get("vacancy_rate");
   const housingFit =
     housingMeasure?.rawValue !== null &&
     housingMeasure?.rawValue !== undefined &&
@@ -292,12 +298,15 @@ export async function loadOfficialAreaEvidence(input: {
           input.commuteCeilingMinutes,
         )
       : null;
-
+const marketFit =
+  marketMeasure?.rawValue !== null && marketMeasure?.rawValue !== undefined
+    ? scoreMarketVacancy(marketMeasure.rawValue)
+    : null;
   const scoredMetrics = [
     { metricId: "housing", normalizedFitScore: housingFit },
     { metricId: "reportedCrime", normalizedFitScore: null },
     { metricId: "mobility", normalizedFitScore: mobilityFit },
-    { metricId: "market", normalizedFitScore: null },
+    { metricId: "market", normalizedFitScore: marketFit },
     { metricId: "dailyLife", normalizedFitScore: null },
   ];
   const areaScore = computeAreaScore(scoredMetrics, input.weights);
@@ -323,9 +332,10 @@ export async function loadOfficialAreaEvidence(input: {
         (sum, weight) => sum + Math.max(0, weight),
         0,
       ),
-      supported_weight_total:
-        (housingFit === null ? 0 : input.weights.housing) +
-        (mobilityFit === null ? 0 : input.weights.mobility),
+     supported_weight_total:
+  (housingFit === null ? 0 : input.weights.housing) +
+  (mobilityFit === null ? 0 : input.weights.mobility) +
+  (marketFit === null ? 0 : input.weights.market),
       coverage_percent: areaScore.reliableCoveragePercent,
       resolved_geographies: [resolution.data],
       source_summary: [
@@ -371,6 +381,15 @@ export async function loadOfficialAreaEvidence(input: {
       caveat:
         "Fit compares the ACS estimate with your entered commute ceiling; it is not an address-specific drive time.",
     },
+    {
+  key: "market",
+  name: "Housing market context · vacancy rate",
+  measure: marketMeasure,
+  score: marketFit,
+  weight: input.weights.market,
+  caveat:
+    "Vacancy rate is an ACS estimate and does not represent current listings, inventory, or future market conditions.",
+},
   ];
   const metricRows = scored.map((item) => ({
     user_id: input.userId,
@@ -423,12 +442,7 @@ export async function loadOfficialAreaEvidence(input: {
       input.weights.reportedCrime,
       "Reliable reported-crime coverage was not resolved. No zero or safety claim was substituted.",
     ],
-    [
-      "market",
-      "Housing market context",
-      input.weights.market,
-      "ACS housing estimates are available, but a current market-fit measure was not resolved.",
-    ],
+  
     [
       "dailyLife",
       "Personal daily-life fit",
