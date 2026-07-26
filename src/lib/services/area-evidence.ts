@@ -8,6 +8,7 @@ import {
 } from "@/lib/cache/provider-cache";
 import {
   CensusAcsProvider,
+  FbiCrimeProvider,
   CensusGeographyResolver,
   type CensusAreaProfile,
   type HerePlace,
@@ -94,6 +95,7 @@ async function persistUnavailableAreaEvidence(input: {
           checkedAt: input.failure.meta.checkedAt,
           status: "unavailable",
         },
+        
       ],
       caveats: [
         input.failure.message,
@@ -167,6 +169,9 @@ export async function loadOfficialAreaEvidence(input: {
     apiKey: process.env.CENSUS_API_KEY,
     year: 2024,
   });
+  const crimeProvider = new FbiCrimeProvider(
+  process.env.FBI_CDE_API_KEY,
+);
   const resolution = await resolver.resolve(input.place, input.hint ?? "auto");
   if (resolution.status === "unavailable") {
     const score = computeAreaScore(
@@ -270,7 +275,10 @@ export async function loadOfficialAreaEvidence(input: {
       },
     };
   }
+const stateAbbreviation =
+  input.place.address.stateCode?.toUpperCase().split("-").at(-1) ?? "";
 
+const crimeProfile = await crimeProvider.stateProfile(stateAbbreviation);
   const byId = new Map(
     profile.data.measures.map((measure) => [measure.id, measure]),
   );
@@ -302,9 +310,27 @@ const marketFit =
   marketMeasure?.rawValue !== null && marketMeasure?.rawValue !== undefined
     ? scoreMarketVacancy(marketMeasure.rawValue)
     : null;
+  // Product-defined context references; these are not FBI safety thresholds.
+const crimeFit =
+  crimeProfile.status === "available"
+    ? Math.round(
+        (
+          (scoreAgainstCeiling(
+            crimeProfile.data.violentCrimeRatePer100k,
+            400,
+          ) ?? 0) *
+            0.6 +
+          (scoreAgainstCeiling(
+            crimeProfile.data.propertyCrimeRatePer100k,
+            2_000,
+          ) ?? 0) *
+            0.4
+        ) * 10,
+      ) / 10
+    : null;
   const scoredMetrics = [
     { metricId: "housing", normalizedFitScore: housingFit },
-    { metricId: "reportedCrime", normalizedFitScore: null },
+    { metricId: "reportedCrime", normalizedFitScore: crimeFit },
     { metricId: "mobility", normalizedFitScore: mobilityFit },
     { metricId: "market", normalizedFitScore: marketFit },
     { metricId: "dailyLife", normalizedFitScore: null },
@@ -334,6 +360,7 @@ const marketFit =
       ),
      supported_weight_total:
   (housingFit === null ? 0 : input.weights.housing) +
+  (crimeFit === null ? 0 : input.weights.reportedCrime) +
   (mobilityFit === null ? 0 : input.weights.mobility) +
   (marketFit === null ? 0 : input.weights.market),
       coverage_percent: areaScore.reliableCoveragePercent,
@@ -345,6 +372,16 @@ const marketFit =
           retrievedAt: profile.meta.retrievedAt,
           source: profile.meta.source,
         },
+        ...(crimeProfile.status === "available"
+  ? [
+      {
+        name: crimeProfile.meta.provider,
+        referencePeriod: String(crimeProfile.data.year),
+        retrievedAt: crimeProfile.meta.retrievedAt,
+        source: crimeProfile.meta.source,
+      },
+    ]
+  : []),
       ],
       caveats: [
         resolution.data.contextMessage,
@@ -435,13 +472,57 @@ const marketFit =
         ? null
         : profile.meta.retrievedAt,
   }));
+  metricRows.push({
+  user_id: input.userId,
+  move_plan_id: input.movePlanId,
+  area_id: input.areaId,
+  snapshot_id: snapshot.id,
+  measure_key: "reported_crime",
+  measure_name: "Reported crime context · state crime rates",
+  availability:
+    crimeProfile.status === "available" ? "available" : "unavailable",
+  raw_value:
+  crimeProfile.status === "available"
+    ? { value: crimeProfile.data.violentCrimeRatePer100k }
+      : null,
+  raw_display:
+    crimeProfile.status === "available"
+      ? `${crimeProfile.data.violentCrimeRatePer100k.toFixed(
+          1,
+        )} violent · ${crimeProfile.data.propertyCrimeRatePer100k.toFixed(
+          1,
+        )} property per 100,000`
+      : null,
+  unit: crimeProfile.status === "available" ? "rate_per_100k" : null,
+  normalized_fit_score: crimeFit,
+  applied_weight: crimeFit === null ? null : input.weights.reportedCrime,
+  source_name:
+    crimeProfile.status === "available"
+      ? crimeProfile.meta.provider
+      : null,
+  source_url:
+    crimeProfile.status === "available" ? crimeProfile.meta.source : null,
+  geography_type: "state",
+  geography_label: stateAbbreviation || null,
+  geography_identifier: stateAbbreviation || null,
+  reference_period:
+    crimeProfile.status === "available"
+      ? String(crimeProfile.data.year)
+      : null,
+  coverage_note:
+    crimeProfile.status === "available"
+      ? crimeProfile.meta.coverage
+      : crimeProfile.message,
+  caveats:
+    crimeProfile.status === "available"
+      ? crimeProfile.data.caveats
+      : [crimeProfile.message, ...crimeProfile.meta.caveats],
+  retrieved_at:
+    crimeProfile.status === "available"
+      ? crimeProfile.meta.retrievedAt
+      : null,
+});
   for (const [key, name, weight, caveat] of [
-    [
-      "reportedCrime",
-      "Reported crime context",
-      input.weights.reportedCrime,
-      "Reliable reported-crime coverage was not resolved. No zero or safety claim was substituted.",
-    ],
   
     [
       "dailyLife",
