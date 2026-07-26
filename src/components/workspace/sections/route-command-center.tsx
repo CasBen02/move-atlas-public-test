@@ -18,6 +18,7 @@ import type {
 import type { WorkspaceData } from "@/lib/data/types";
 import type { WorkspaceActions } from "@/components/workspace/workspace-shell";
 import { HereMap } from "@/components/map/here-map";
+import { CustomRouteStops } from "@/components/workspace/sections/custom-route-stops";
 
 type RouteResponse = Extract<
   ProviderResult<HereRoutePlan>,
@@ -1112,6 +1113,7 @@ export function RouteCommandCenter({
           {busy ? "Calculating and checking providers…" : "Compare real routes"}
         </button>
       </form>
+      <CustomRouteStops movePlanId={workspace.plan.id} />
 
       {!result ? (
         <section className="route-empty">
