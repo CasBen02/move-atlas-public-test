@@ -78,7 +78,7 @@ export class FbiCrimeProvider {
     }
 
     const url = new URL(
-      `https://cde.ucr.cjis.gov/LATEST/estimates/states/${state}`,
+      `https://api.usa.gov/crime/fbi/sapi/api/estimates/states/${state}`,
     );
     url.searchParams.set("API_KEY", this.apiKey.trim());
     url.searchParams.set("per_page", "100");
