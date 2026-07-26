@@ -4286,6 +4286,10 @@ td span {
   .alternative-grid {
     grid-template-columns: 1fr;
   }
+  
+  .fuel-range {
+    grid-template-columns: 1fr;
+  }
 
   .moving-day-grid {
     grid-template-columns: 1fr;
