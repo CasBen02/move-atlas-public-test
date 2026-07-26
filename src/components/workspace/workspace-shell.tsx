@@ -140,6 +140,7 @@ export function WorkspaceShell({
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [quickOpen, setQuickOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const quickDialog = useRef<HTMLElement>(null);
   const careerEnabled =
     initial.preferences?.priority_tags?.includes("Career") ||
@@ -380,19 +381,86 @@ export function WorkspaceShell({
           ["roadmap", "Plan", "✓"],
           ["route", "Route", "⌁"],
           ["tools", "Tools", "▣"],
-          ["move", "More", "•••"],
+          ["more", "More", "•••"],
         ].map(([key, label, icon]) => (
-          <Link
-            aria-current={section === key ? "page" : undefined}
-            className={section === key ? "active" : ""}
-            href={`/app/${initial.plan.id}/${key}`}
-            key={key}
-          >
-            <span aria-hidden="true">{icon}</span>
-            {label}
-          </Link>
+       key === "more" ? (
+  <button
+    aria-expanded={mobileMenuOpen}
+    aria-label={mobileMenuOpen ? "Close full navigation" : "Open full navigation"}
+    className={mobileMenuOpen ? "active" : ""}
+    key={key}
+    onClick={() => setMobileMenuOpen((open) => !open)}
+    type="button"
+  >
+    <span aria-hidden="true">{icon}</span>
+    {label}
+  </button>
+) : (
+  <Link
+    aria-current={section === key ? "page" : undefined}
+    className={section === key ? "active" : ""}
+    href={`/app/${initial.plan.id}/${key}`}
+    key={key}
+  >
+    <span aria-hidden="true">{icon}</span>
+    {label}
+  </Link>
+)
         ))}
       </nav>
+      {mobileMenuOpen ? (
+  <div
+    className="modal-backdrop"
+    onMouseDown={(event) => {
+      if (event.currentTarget === event.target) setMobileMenuOpen(false);
+    }}
+    role="presentation"
+  >
+    <section
+      aria-labelledby="mobile-menu-title"
+      aria-modal="true"
+      className="quick-modal"
+      role="dialog"
+    >
+      <button
+        aria-label="Close navigation"
+        className="modal-close"
+        onClick={() => setMobileMenuOpen(false)}
+        type="button"
+      >
+        ×
+      </button>
+
+      <span className="eyebrow">Move Atlas</span>
+      <h2 id="mobile-menu-title">All sections</h2>
+
+      <div className="quick-grid">
+        {navigation
+          .filter(([key]) => key !== "career" || careerEnabled)
+          .map(([key, label, icon]) => (
+            <Link
+              href={`/app/${initial.plan.id}/${key}`}
+              key={key}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <strong>
+                <span aria-hidden="true">{icon}</span> {label}
+              </strong>
+              <span>{sectionMeta[key]?.eyebrow ?? "Open section"}</span>
+            </Link>
+          ))}
+
+        <Link
+          href={`/app/${initial.plan.id}/account`}
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <strong>⚙ Account</strong>
+          <span>Account, privacy, export, and sign out</span>
+        </Link>
+      </div>
+    </section>
+  </div>
+) : null}
 
       {quickOpen ? (
         <div
