@@ -251,7 +251,9 @@ export async function POST(request: NextRequest) {
   const parsed = requestSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return noStoreJson(
-      { error: "Review the route and vehicle details.", issues: parsed.error.flatten().fieldErrors },
+      { error: "Review the routeparsed.error.issues
+  .map((issue) => `${issue.path.join(".") || "request"}: ${issue.message}`)
+  .join(" ")and vehicle details.", issues: parsed.error.flatten().fieldErrors },
       { status: 400 },
     );
   }
