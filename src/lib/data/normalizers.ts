@@ -99,6 +99,7 @@ export function normalizePreferences(raw: Row | null): SetupPreferences | null {
     mobility_weight: numeric(weights.mobility) ?? 50,
     market_weight: numeric(weights.market) ?? 50,
     daily_life_weight: numeric(weights.dailyLife) ?? 50,
+    schools_weight: numeric(weights.schools) ?? 0,
   };
 }
 
