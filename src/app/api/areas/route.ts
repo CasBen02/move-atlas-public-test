@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
       mobility: Number(weights.mobility ?? 50),
       market: Number(weights.market ?? 50),
       dailyLife: Number(weights.dailyLife ?? 50),
+      schools: Number(weights.schools ?? 0),
     },
     housingIntent: String(household.housingIntent ?? "rent"),
     housingMonthlyCeilingDollars:
