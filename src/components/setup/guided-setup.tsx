@@ -65,6 +65,7 @@ type SetupState = {
     mobility: number;
     market: number;
     dailyLife: number;
+    schools: number;
   };
 };
 
@@ -113,6 +114,7 @@ export function GuidedSetup({ defaultName }: { defaultName: string }) {
       mobility: 55,
       market: 45,
       dailyLife: 70,
+      schools: 60,
     },
   });
 
@@ -484,6 +486,7 @@ export function GuidedSetup({ defaultName }: { defaultName: string }) {
               ["mobility", "Mobility and commute"],
               ["market", "Housing market context"],
               ["dailyLife", "Daily-life fit"],
+          ["schools", "School quality"],
             ].map(([key, label]) => (
               <label className="range-row" key={key}>
                 <span>{label}</span>
