@@ -167,6 +167,7 @@ function normalizeMove(
         mobility: number(weights.mobility, 0, 100),
         market: number(weights.market, 0, 100),
         dailyLife: number(weights.lifestyle, 0, 100),
+        schools: number(weights.schools, 0, 100) ?? 0,
       },
     },
     records: {
