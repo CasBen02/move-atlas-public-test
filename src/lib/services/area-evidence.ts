@@ -288,6 +288,8 @@ const crimeProfile = await crimeProvider.stateProfile(stateAbbreviation);
       : byId.get("median_gross_rent");
   const commuteMeasure = byId.get("mean_commute_minutes");
   const marketMeasure = byId.get("vacancy_rate");
+  const incomeMeasure = byId.get("median_household_income");
+const broadbandMeasure = byId.get("broadband_subscription_rate");
   const housingFit =
     housingMeasure?.rawValue !== null &&
     housingMeasure?.rawValue !== undefined &&
@@ -309,6 +311,24 @@ const crimeProfile = await crimeProvider.stateProfile(stateAbbreviation);
 const marketFit =
   marketMeasure?.rawValue !== null && marketMeasure?.rawValue !== undefined
     ? scoreMarketVacancy(marketMeasure.rawValue)
+    : null;
+  const incomeFit =
+  incomeMeasure?.rawValue !== null &&
+  incomeMeasure?.rawValue !== undefined
+    ? Math.min(100, (incomeMeasure.rawValue / 75_000) * 100)
+    : null;
+
+const broadbandFit =
+  broadbandMeasure?.rawValue !== null &&
+  broadbandMeasure?.rawValue !== undefined
+    ? broadbandMeasure.rawValue
+    : null;
+
+const dailyLifeFit =
+  incomeFit !== null || broadbandFit !== null
+    ? Math.round(
+        ((incomeFit ?? 0) * 0.4 + (broadbandFit ?? 0) * 0.6) * 10,
+      ) / 10
     : null;
   // Product-defined context references; these are not FBI safety thresholds.
 const crimeFit =
@@ -333,7 +353,7 @@ const crimeFit =
     { metricId: "reportedCrime", normalizedFitScore: crimeFit },
     { metricId: "mobility", normalizedFitScore: mobilityFit },
     { metricId: "market", normalizedFitScore: marketFit },
-    { metricId: "dailyLife", normalizedFitScore: null },
+    { metricId: "dailyLife", normalizedFitScore: dailyLifeFit },
   ];
   const areaScore = computeAreaScore(scoredMetrics, input.weights);
   const admin = createAdminClient();
@@ -362,7 +382,8 @@ const crimeFit =
   (housingFit === null ? 0 : input.weights.housing) +
   (crimeFit === null ? 0 : input.weights.reportedCrime) +
   (mobilityFit === null ? 0 : input.weights.mobility) +
-  (marketFit === null ? 0 : input.weights.market),
+  (marketFit === null ? 0 : input.weights.market) +
+(dailyLifeFit === null ? 0 : input.weights.dailyLife),
       coverage_percent: areaScore.reliableCoveragePercent,
       resolved_geographies: [resolution.data],
       source_summary: [
@@ -426,6 +447,15 @@ const crimeFit =
   weight: input.weights.market,
   caveat:
     "Vacancy rate is an ACS estimate and does not represent current listings, inventory, or future market conditions.",
+},
+    {
+  key: "daily_life",
+  name: "Personal daily-life fit · income and broadband",
+  measure: broadbandMeasure ?? incomeMeasure,
+  score: dailyLifeFit,
+  weight: input.weights.dailyLife,
+  caveat:
+    "Fit combines ACS median household income (40%) and broadband subscription rate (60%); it is broad area context, not a personalized lifestyle assessment.",
 },
   ];
   const metricRows: Record<string, unknown>[] = scored.map((item) => ({
@@ -522,39 +552,7 @@ const crimeFit =
       ? crimeProfile.meta.retrievedAt
       : null,
 });
-  for (const [key, name, weight, caveat] of [
-  
-    [
-      "dailyLife",
-      "Personal daily-life fit",
-      input.weights.dailyLife,
-      "Personal daily-life fit remains separate from official-data scoring.",
-    ],
-  ] as const) {
-    metricRows.push({
-      user_id: input.userId,
-      move_plan_id: input.movePlanId,
-      area_id: input.areaId,
-      snapshot_id: snapshot.id,
-      measure_key: key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`),
-      measure_name: name,
-      availability: "unavailable",
-      raw_value: null,
-      raw_display: null,
-      unit: null,
-      normalized_fit_score: null,
-      applied_weight: null,
-      source_name: null,
-      source_url: null,
-      geography_type: resolution.data.resolution,
-      geography_label: profile.data.geography,
-      geography_identifier: JSON.stringify(resolution.data.geography).slice(0, 160),
-      reference_period: null,
-      coverage_note: caveat,
-      caveats: [caveat, `Requested weight: ${weight}`],
-      retrieved_at: null,
-    });
-  }
+
   const { error: metricError } = await admin
     .from("area_metrics")
     .insert(metricRows);
