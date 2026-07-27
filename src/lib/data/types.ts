@@ -44,6 +44,7 @@ export type SetupPreferences = {
   mobility_weight: number;
   market_weight: number;
   daily_life_weight: number;
+  schools_weight: number;
 };
 
 export type WorkspaceRecord = {
