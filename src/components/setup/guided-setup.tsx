@@ -486,7 +486,7 @@ export function GuidedSetup({ defaultName }: { defaultName: string }) {
               ["mobility", "Mobility and commute"],
               ["market", "Housing market context"],
               ["dailyLife", "Daily-life fit"],
-          ["schools", "School quality"],
+          ["schools", "Public-school context"],
             ].map(([key, label]) => (
               <label className="range-row" key={key}>
                 <span>{label}</span>
