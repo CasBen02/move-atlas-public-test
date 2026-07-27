@@ -40,6 +40,7 @@ export const movePlanInputSchema = z.object({
     mobility: z.coerce.number().int().min(0).max(100),
     market: z.coerce.number().int().min(0).max(100),
     dailyLife: z.coerce.number().int().min(0).max(100),
+    schools: z.coerce.number().int().min(0).max(100).default(0),
   }),
 });
 
