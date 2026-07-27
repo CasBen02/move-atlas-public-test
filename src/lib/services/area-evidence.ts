@@ -23,6 +23,7 @@ type AreaWeights = {
   mobility: number;
   market: number;
   dailyLife: number;
+  schools: number;
 };
 
 function scoreAgainstCeiling(value: number, ceiling: number) {
@@ -55,6 +56,7 @@ const requestedAreaCategories = [
   ["mobility", "Mobility and commute"],
   ["market", "Housing market context"],
   ["dailyLife", "Personal daily-life fit"],
+  ["schools", "Public-school context"],
 ] as const;
 
 async function persistUnavailableAreaEvidence(input: {
@@ -354,6 +356,7 @@ const crimeFit =
     { metricId: "mobility", normalizedFitScore: mobilityFit },
     { metricId: "market", normalizedFitScore: marketFit },
     { metricId: "dailyLife", normalizedFitScore: dailyLifeFit },
+    { metricId: "schools", normalizedFitScore: null },
   ];
   const areaScore = computeAreaScore(scoredMetrics, input.weights);
   const admin = createAdminClient();
@@ -552,7 +555,33 @@ const crimeFit =
       ? crimeProfile.meta.retrievedAt
       : null,
 });
-
+metricRows.push({
+  user_id: input.userId,
+  move_plan_id: input.movePlanId,
+  area_id: input.areaId,
+  snapshot_id: snapshot.id,
+  measure_key: "schools",
+  measure_name: "Public-school context",
+  availability: "unavailable",
+  raw_value: null,
+  raw_display: null,
+  unit: null,
+  normalized_fit_score: null,
+  applied_weight: null,
+  source_name: null,
+  source_url: null,
+  geography_type: resolution.data.resolution,
+  geography_label: profile.data.geography,
+  geography_identifier: JSON.stringify(resolution.data.geography).slice(0, 160),
+  reference_period: null,
+  coverage_note:
+    "Official nationwide school-performance evidence is not connected yet.",
+  caveats: [
+    "School enrollment and directory data should not be presented as a school-quality ranking.",
+    "This category is excluded from the weighted score until an authorized official-data adapter is connected.",
+  ],
+  retrieved_at: null,
+});
   const { error: metricError } = await admin
     .from("area_metrics")
     .insert(metricRows);
